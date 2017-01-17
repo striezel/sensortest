@@ -58,7 +58,7 @@ class Gpio
      * \return Returns true, if the edge status was changed.
      *         Returns false, if an error occurred.
      */
-    bool edge(const Edges e);
+    bool setEdge(const Edges e);
 
 
     /** \brief gets the current edge management status

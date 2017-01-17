@@ -110,7 +110,7 @@ bool Gpio::value(int& val) const
   return true;
 }
 
-bool Gpio::edge(const Edges e)
+bool Gpio::setEdge(const Edges e)
 {
   const std::string fileName = std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/edge");
   std::ofstream edge(fileName.c_str());
