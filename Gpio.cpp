@@ -110,4 +110,70 @@ bool Gpio::value(int& val) const
   return true;
 }
 
+bool Gpio::edge(const Edges e)
+{
+  const std::string fileName = std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/edge");
+  std::ofstream edge(fileName.c_str());
+  if (!edge.good())
+  {
+    std::clog << "Could not open edge file " << fileName << "!\n";
+    return false;
+  }
+  switch(e)
+  {
+
+    case Edges::Rising:
+         edge << "rising";
+         break;
+    case Edges::Falling:
+         edge << "falling";
+         break;
+    case Edges::Both:
+         edge << "both";
+         break;
+    case Edges::None:
+    default:
+         edge << "none";
+         break;
+  } //switch
+  if (!edge.good())
+  {
+    std::clog << "Could not write to edge file!\n";
+    return false;
+  }
+  edge.close();
+  if (!edge.good())
+  {
+    std::clog << "Could not close edge file!\n";
+    return false;
+  }
+  return edge.good();
+}
+
+bool Gpio::edge(Edges& val) const
+{
+  std::ifstream valueStream(std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/edge"));
+  if (!valueStream.good())
+    return false;
+  std::string str1;
+  valueStream >> str1;
+  valueStream.close();
+  if (!valueStream.good())
+    return false;
+  if (str1 == "none")
+    val = Edges::None;
+  else if (str1 == "both")
+    val = Edges::Both;
+  else if (str1 == "rising")
+    val = Edges::Rising;
+  else if (str1 == "falling")
+    val = Edges::Falling;
+  else
+  {
+    std::clog << "Unknown edge value \"" << str1 << "\"!\n";
+    return false;
+  }
+  return true;
+}
+
 } //namespace

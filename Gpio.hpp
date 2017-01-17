@@ -8,6 +8,8 @@ namespace test
 
 enum class IODirection { In, Out};
 
+enum class Edges { None, Rising, Falling, Both};
+
 class Gpio
 {
   public:
@@ -48,6 +50,22 @@ class Gpio
      * \return Returns true on success, false on failure.
      */
     bool value(int& val) const;
+
+
+    /** \brief determines which edges should cause an interrupt
+     *
+     * \param e  enumeration to indicate the edges
+     * \return Returns true, if the edge status was changed.
+     *         Returns false, if an error occurred.
+     */
+    bool edge(const Edges e);
+
+
+    /** \brief gets the current edge management status
+     *
+     * \return Returns the edge management status.
+     */
+    bool edge(Edges& e) const;
   private:
     int m_pin; /**< pin number */
     std::string m_pinAsString; /**< same, but in string format */
