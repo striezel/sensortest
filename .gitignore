@@ -1,0 +1,11 @@
+# binary and object files
+bin/
+obj/
+
+# Code::Blocks files
+*.layout
+*.depend
+
+# others
+*.pdf
+*.zip
