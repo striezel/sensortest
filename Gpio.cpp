@@ -62,7 +62,7 @@ bool Gpio::unexportPin()
 
 bool Gpio::setDirection()
 {
-  std::ofstream dir(std::string("/sys/class/gpio") + m_pinAsString + std::string("/direction"));
+  std::ofstream dir(std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/direction"));
   if (!dir.good())
     return false;
   switch(m_direction)
@@ -81,7 +81,7 @@ bool Gpio::setDirection()
 
 bool Gpio::value(int& val) const
 {
-  std::ifstream valueStream(std::string("/sys/class/gpio") + m_pinAsString + std::string("/value"));
+  std::ifstream valueStream(std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/value"));
   if (!valueStream.good())
     return false;
   std::string str1;
