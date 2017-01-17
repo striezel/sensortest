@@ -2,6 +2,11 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+//most includes below are C-style stuff
+#include <fcntl.h> //for poll() and non-blocking I/O
+#include <poll.h> //for poll()
+#include <cstring> //for memset()
+#include <unistd.h> //for close()
 
 namespace test
 {
@@ -173,6 +178,68 @@ bool Gpio::edge(Edges& val) const
     std::clog << "Unknown edge value \"" << str1 << "\"!\n";
     return false;
   }
+  return true;
+}
+
+bool Gpio::pollEdge(int& value, unsigned int timeoutMilliseconds) const
+{
+  const std::string fileName = std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/value");
+  int fd = open(fileName.c_str(), O_RDONLY | O_NONBLOCK);
+  if (fd < 0)
+  {
+    std::clog << "Could not open " << fileName << ".\n";
+    return false;
+  }
+  struct pollfd fds[1];
+  std::memset(&fds, '\0', sizeof(fds));
+  fds[0].fd = fd;
+  fds[0].events = POLLPRI;
+  int pollResult = poll(fds, 1, timeoutMilliseconds);
+  if (pollResult < 0)
+  {
+    std::clog << "Polling of file descriptor failed!\n";
+    close(fd);
+    return false;
+  }
+  else if (pollResult == 0)
+  {
+    //timeout, but that is OK
+    value = 0;
+  } //else (timeout)
+  else if (pollResult > 0)
+  {
+    const unsigned int bufferSize = 4;
+    char buffer[bufferSize];
+    std::memset(buffer, 0, bufferSize);
+    const ssize_t readBytes = read(fd, buffer, bufferSize);
+    if (readBytes < 0)
+    {
+      std::clog << "Error while reading from file!\n";
+      close(fd);
+      return false;
+    }
+    if (readBytes == 0)
+    {
+      //should not happen, because there ought to be data
+      std::clog << "Error: Zero bytes read from file after polling.\n";
+      close(fd);
+      return false;
+    }
+    std::string data = std::string(buffer, readBytes);
+    if ("0" == data)
+      value = -1; //falling flank
+    else if ("1" == data)
+      value = 1; //rising flank
+    else
+    {
+      //unknown value
+      std::clog << "Unexpected value \"" << data << "\" was encountered!\n";
+      value = 0;
+      close(fd);
+      return false;
+    }
+  } //else (poll() found something)
+  close(fd);
   return true;
 }
 

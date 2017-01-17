@@ -66,6 +66,16 @@ class Gpio
      * \return Returns the edge management status.
      */
     bool edge(Edges& e) const;
+
+
+    /** \brief waits for edge on the pin
+     *
+     * \param value  stores the flank: 0 for no edge/timeout; -1 for falling and 1 for rising edge
+     * \param timeoutMilliseconds timeout in milliseconds (maximum time to wait for an edge)
+     * \return Returns true, if everything went fine - value is set in this case.
+     * Returns false, if an error occurred - value is undefined in that case.
+     */
+    bool pollEdge(int& value, unsigned int timeoutMilliseconds) const;
   private:
     int m_pin; /**< pin number */
     std::string m_pinAsString; /**< same, but in string format */
