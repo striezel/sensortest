@@ -62,9 +62,13 @@ bool Gpio::unexportPin()
 
 bool Gpio::setDirection()
 {
-  std::ofstream dir(std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/direction"));
+  const std::string fileName = std::string("/sys/class/gpio/gpio") + m_pinAsString + std::string("/direction");
+  std::ofstream dir(fileName);
   if (!dir.good())
+  {
+    std::clog << "Could not open direction file " << fileName << "!\n";
     return false;
+  }
   switch(m_direction)
   {
     case IODirection::In:
@@ -75,7 +79,17 @@ bool Gpio::setDirection()
          dir << "out";
          break;
   } //switch
+  if (!dir.good())
+  {
+    std::clog << "Could not write to direction file!\n";
+    return false;
+  }
   dir.close();
+  if (!dir.good())
+  {
+    std::clog << "Could not close direction file!\n";
+    return false;
+  }
   return dir.good();
 }
 
