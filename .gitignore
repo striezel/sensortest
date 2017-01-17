@@ -1,1 +1,5 @@
 *.zip
+bin/
+obj/
+*.layout
+*.depend
