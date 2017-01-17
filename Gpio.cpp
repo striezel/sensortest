@@ -226,9 +226,9 @@ bool Gpio::pollEdge(int& value, unsigned int timeoutMilliseconds) const
       return false;
     }
     std::string data = std::string(buffer, readBytes);
-    if ("0" == data)
+    if (("0\n" == data) || ("0" == data))
       value = -1; //falling flank
-    else if ("1" == data)
+    else if (("1\n" == data) || ("1" == data))
       value = 1; //rising flank
     else
     {
