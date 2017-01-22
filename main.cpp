@@ -7,6 +7,8 @@ int main()
 {
   std::cout << "Hello world!" << std::endl;
 
+  wiringPiSetupGpio();
+
   RCSwitch rc = RCSwitch(1, -1);
   while(true)
   {
