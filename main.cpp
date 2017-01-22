@@ -1,9 +1,26 @@
+#include <cstring>
 #include <iostream>
-
-using namespace std;
+#include <thread>
+#include "RCSwitch.h"
 
 int main()
 {
-    cout << "Hello world!" << endl;
-    return 0;
+  std::cout << "Hello world!" << std::endl;
+
+  RCSwitch rc = RCSwitch(1, -1);
+  while(true)
+  {
+    if (rc.OokAvailable())
+    {
+      const int bufferSize = 256;
+      char buffer[bufferSize];
+      std::memset(buffer, 0, bufferSize);
+
+      rc.getOokCode(buffer);
+      std::cout << "Message: " << buffer << "\n";
+    } //if
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  } //while
+
+  return 0;
 }
